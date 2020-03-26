@@ -1,12 +1,14 @@
 const {
-  readFile,
-  writeFile,
+  readCSVFile,
+  writeCSVFile,
+  appendCSVFile,
   getIdFromUrl,
   addId,
-  addToFile
+  isNote,
+  isNoteProperties
 } = require('../services/services');
 
-const post = async (req, res, pathName) => {
+const post = async (req, res, datebasePath, storeIdPath) => {
   let body = '';
 
   await req.on('data', data => {
@@ -14,10 +16,16 @@ const post = async (req, res, pathName) => {
   });
 
   const parsedBody = JSON.parse(body);
+  const notAcceptable = !isNote(parsedBody);
+  if (notAcceptable) {
+    res.writeHead(406);
+    res.end('Your note object is invalid');
+    return;
+  }
 
   try {
-    const newNote = await addId(parsedBody, pathName);
-    await addToFile(newNote, pathName);
+    const newNote = await addId(parsedBody, storeIdPath);
+    await appendCSVFile(newNote, datebasePath);
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.write(JSON.stringify(newNote));
   } catch (error) {
@@ -27,11 +35,11 @@ const post = async (req, res, pathName) => {
   res.end();
 };
 
-const get = async (req, res, pathName) => {
+const get = async (req, res, datebasePath) => {
   const id = getIdFromUrl(req.url);
 
   try {
-    const notes = await readFile(pathName);
+    const notes = await readCSVFile(datebasePath);
 
     res.writeHead(200, { 'Content-Type': 'application/json' });
 
@@ -49,7 +57,7 @@ const get = async (req, res, pathName) => {
   res.end();
 };
 
-const update = async (req, res, pathName) => {
+const update = async (req, res, datebasePath) => {
   const id = getIdFromUrl(req.url);
   let body = '';
 
@@ -59,7 +67,14 @@ const update = async (req, res, pathName) => {
 
   const parsedBody = JSON.parse(body);
 
-  const notes = await readFile(pathName);
+  const notAcceptable = !isNoteProperties(parsedBody);
+  if (notAcceptable) {
+    res.writeHead(406); //ГЛЯНУТЬ КОДЫ ОШИБОК
+    res.end('Your updated properties are invalid');
+    return;
+  }
+
+  const notes = await readCSVFile(datebasePath);
   let updatedNote = {};
 
   const newNotes = notes.map(note => {
@@ -72,7 +87,7 @@ const update = async (req, res, pathName) => {
   });
 
   try {
-    await writeFile(pathName, newNotes);
+    await writeCSVFile(datebasePath, newNotes);
     res.writeHead(200, { 'Content-Type': 'application/json' });
     res.write(JSON.stringify(updatedNote));
   } catch (error) {
@@ -82,14 +97,14 @@ const update = async (req, res, pathName) => {
   res.end();
 };
 
-const deleteNote = async (req, res, pathName) => {
+const deleteNote = async (req, res, datebasePath) => {
   const id = getIdFromUrl(req.url);
 
   try {
-    const notes = await readFile(pathName);
+    const notes = await readCSVFile(datebasePath);
     const newNotes = notes.filter(note => note.id !== id);
 
-    await writeFile(pathName, newNotes);
+    await writeCSVFile(datebasePath, newNotes);
     res.writeHead(200);
     res.write('Note was deleted');
   } catch (error) {

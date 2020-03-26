@@ -2,63 +2,93 @@ const fs = require('fs');
 const { promisify } = require('util');
 const stringify = require('csv-stringify');
 const csv = require('csvtojson');
+const { noteProperties } = require('../config/config');
 
-const readFile = async pathName => {
-  const notes = await csv().fromFile(pathName);
+const readCSVFile = async datebasePath => {
+  const notes = await csv().fromFile(datebasePath);
 
   return notes;
 };
 
-const writeFile = (pathName, notes, opts = 'utf8') => {
-  const wf = promisify(fs.writeFile);
+const writeCSVFile = (datebasePath, notes, opts = 'utf8') => {
   const notesValue = notes.map(note => Object.values(note));
-
-  notesValue.unshift(['name', 'description', 'rate', 'id']);
+  const notesKeys = Object.keys(notes[0]);
+  notesValue.unshift(notesKeys);
 
   stringify(notesValue, (err, data) => {
     if (err) {
-      return console.log(err);
-      // throw err;
+      throw err;
     }
-    wf(pathName, data, opts);
-  });
-};
-
-const getIdFromUrl = url => url.split('/')[2];
-
-const getLastId = async pathName => {
-  const notes = await readFile(pathName);
-
-  return notes[notes.length - 1].id;
-};
-
-const addId = async (note, pathName) => {
-  const lastId = await getLastId(pathName);
-  const id = Number(lastId) + 1;
-  const newNote = { ...note, id };
-  return newNote;
-};
-
-const addToFile = (note, pathName) => {
-  const noteValues = Object.values(note);
-  stringify([noteValues], (err, data) => {
-    if (err) {
-      return console.log(err);
-      // throw err;
-    }
-    fs.appendFile(pathName, data, 'utf8', err => {
+    fs.writeFile(datebasePath, data, opts, err => {
       if (err) {
-        // throw err;
-        console.log(err);
+        throw err;
       }
     });
   });
 };
 
+const appendCSVFile = (note, datebasePath) => {
+  const noteValues = Object.values(note);
+  stringify([noteValues], (err, data) => {
+    if (err) {
+      throw err;
+    }
+    fs.appendFile(datebasePath, data, 'utf8', err => {
+      if (err) {
+        throw err;
+      }
+    });
+  });
+};
+
+const getIdFromUrl = url => url.split('/')[2];
+
+const getNextId = async storeIdPath => {
+  const rf = promisify(fs.readFile);
+  const wf = promisify(fs.writeFile);
+
+  const idStore = await rf(storeIdPath);
+  const parsedIdStore = JSON.parse(idStore);
+
+  const nextId = parsedIdStore.nextId;
+  const newIdStore = { nextId: nextId + 1 };
+
+  wf(storeIdPath, JSON.stringify(newIdStore));
+
+  return nextId;
+};
+
+const addId = async (note, storeIdPath) => {
+  const id = await getNextId(storeIdPath);
+
+  const newNote = { ...note, id: id.toString() };
+  return newNote;
+};
+
+const isNote = note => {
+  console.log('noteProperties :', noteProperties);
+  const noteKeys = Object.keys(note);
+
+  const hasRequiredProperties = noteKeys.every(key =>
+    noteProperties.includes(key)
+  );
+  return hasRequiredProperties;
+};
+
+const isNoteProperties = note => {
+  const noteKeys = Object.keys(note);
+  const hasOnlyRequiredProperties = noteKeys.every(key =>
+    noteProperties.includes(key)
+  );
+  return hasOnlyRequiredProperties;
+};
+
 module.exports = {
-  readFile,
-  writeFile,
+  readCSVFile,
+  writeCSVFile,
+  appendCSVFile,
   getIdFromUrl,
   addId,
-  addToFile
+  isNote,
+  isNoteProperties
 };

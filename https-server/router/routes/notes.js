@@ -1,4 +1,3 @@
-const path = require('path');
 const {
   post,
   get,
@@ -7,21 +6,19 @@ const {
   notFound
 } = require('../../controllers/controllers');
 
-const notesRoute = (req, res) => {
-  const pathName = path.join(__dirname, '..', '..', 'db', 'file.csv');
-
+const notesRoute = (req, res, datebasePath, storeIdPath) => {
   switch (req.method) {
     case 'GET':
-      get(req, res, pathName);
+      get(req, res, datebasePath);
       break;
     case 'POST':
-      post(req, res, pathName);
+      post(req, res, datebasePath, storeIdPath);
       break;
     case 'PATCH':
-      update(req, res, pathName);
+      update(req, res, datebasePath);
       break;
     case 'DELETE':
-      deleteNote(req, res, pathName);
+      deleteNote(req, res, datebasePath);
       break;
     default:
       notFound(res);
