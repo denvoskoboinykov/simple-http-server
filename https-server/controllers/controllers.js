@@ -69,7 +69,7 @@ const update = async (req, res, datebasePath) => {
 
   const notAcceptable = !isNoteProperties(parsedBody);
   if (notAcceptable) {
-    res.writeHead(406); //ГЛЯНУТЬ КОДЫ ОШИБОК
+    res.writeHead(406);
     res.end('Your updated properties are invalid');
     return;
   }

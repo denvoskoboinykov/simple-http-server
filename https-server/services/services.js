@@ -1,7 +1,8 @@
 const fs = require('fs');
-const { promisify } = require('util');
+// const { promisify } = require('util');
 const stringify = require('csv-stringify');
 const csv = require('csvtojson');
+const { getNextId } = require('../helpers/helpers');
 const { noteProperties } = require('../config/config');
 
 const readCSVFile = async datebasePath => {
@@ -43,35 +44,20 @@ const appendCSVFile = (note, datebasePath) => {
 
 const getIdFromUrl = url => url.split('/')[2];
 
-const getNextId = async storeIdPath => {
-  const rf = promisify(fs.readFile);
-  const wf = promisify(fs.writeFile);
-
-  const idStore = await rf(storeIdPath);
-  const parsedIdStore = JSON.parse(idStore);
-
-  const nextId = parsedIdStore.nextId;
-  const newIdStore = { nextId: nextId + 1 };
-
-  wf(storeIdPath, JSON.stringify(newIdStore));
-
-  return nextId;
-};
-
 const addId = async (note, storeIdPath) => {
   const id = await getNextId(storeIdPath);
 
   const newNote = { ...note, id: id.toString() };
+
   return newNote;
 };
 
 const isNote = note => {
-  console.log('noteProperties :', noteProperties);
   const noteKeys = Object.keys(note);
-
   const hasRequiredProperties = noteKeys.every(key =>
     noteProperties.includes(key)
   );
+
   return hasRequiredProperties;
 };
 
@@ -80,6 +66,7 @@ const isNoteProperties = note => {
   const hasOnlyRequiredProperties = noteKeys.every(key =>
     noteProperties.includes(key)
   );
+
   return hasOnlyRequiredProperties;
 };
 
