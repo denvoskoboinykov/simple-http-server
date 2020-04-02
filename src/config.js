@@ -6,11 +6,8 @@ const dbFolderPath = path.join(__dirname, '..', 'db');
 const datebasePath = path.join(dbFolderPath, 'notes.csv');
 const storeIdPath = path.join(dbFolderPath, 'idStore.json');
 
-const noteProperties = ['name', 'description', 'rate'];
-
 module.exports = {
   port,
   datebasePath,
-  storeIdPath,
-  noteProperties
+  storeIdPath
 };
