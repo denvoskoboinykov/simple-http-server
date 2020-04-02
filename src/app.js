@@ -1,17 +1,11 @@
-const https = require('https');
-const fs = require('fs');
+const http = require('http');
 const url = require('url');
 const router = require('./router/router');
 const { getPath } = require('./helpers');
 const { port, datebasePath, storeIdPath } = require('./config');
 
-const options = {
-  key: fs.readFileSync('key.pem'),
-  cert: fs.readFileSync('cert.pem')
-};
-
-https
-  .createServer(options, (req, res) => {
+http
+  .createServer((req, res) => {
     const parsedUrl = url.parse(req.url);
     const path = getPath(parsedUrl.pathname);
 
