@@ -16,9 +16,4 @@ const getNextId = async storeIdPath => {
   return nextId;
 };
 
-const getPath = url => url.split('/')[1];
-
-module.exports = {
-  getNextId,
-  getPath
-};
+module.exports = getNextId;

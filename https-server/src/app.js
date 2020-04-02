@@ -2,8 +2,8 @@ const https = require('https');
 const fs = require('fs');
 const url = require('url');
 const router = require('./router/router');
-const { getPath } = require('./helpers/helpers');
-const { port, datebasePath, storeIdPath } = require('./config/config');
+const { getPath } = require('./helpers');
+const { port, datebasePath, storeIdPath } = require('./config');
 
 const options = {
   key: fs.readFileSync('key.pem'),
@@ -19,4 +19,6 @@ https
 
     routerGet(req, res, datebasePath, storeIdPath);
   })
-  .listen(port);
+  .listen(port, () => {
+    console.log(`Server is listening on port ${port}`);
+  });
