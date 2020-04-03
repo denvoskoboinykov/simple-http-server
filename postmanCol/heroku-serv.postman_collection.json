@@ -1,0 +1,167 @@
+{
+	"info": {
+		"_postman_id": "9689f619-de10-4cbf-9b8d-83ea48a01568",
+		"name": "heroku serv",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET",
+			"item": [
+				{
+					"name": "api/notes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://guarded-earth-72305.herokuapp.com/notes",
+							"protocol": "https",
+							"host": [
+								"guarded-earth-72305",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"notes"
+							]
+						},
+						"description": "GET request without 'id'\nit should return all notes from file.csv"
+					},
+					"response": []
+				},
+				{
+					"name": "api/notes/:id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://guarded-earth-72305.herokuapp.com/notes/2",
+							"protocol": "https",
+							"host": [
+								"guarded-earth-72305",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"notes",
+								"2"
+							]
+						},
+						"description": "GET request with 'id'\nit should return info about JS"
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "POST",
+			"item": [
+				{
+					"name": "api/notes",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "    {\r\n        \"name\": \"C#\",\r\n        \"description\": \"seems good\",\r\n        \"rate\": 2000\r\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://guarded-earth-72305.herokuapp.com/notes",
+							"protocol": "https",
+							"host": [
+								"guarded-earth-72305",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"notes"
+							]
+						},
+						"description": "POST request\nu need to send body with 'name', 'descriotion' and 'rate'\nit should add your obj to file.csv\nexpected the same object with new property 'id'"
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "DELETE",
+			"item": [
+				{
+					"name": "api/notes/:id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://guarded-earth-72305.herokuapp.com/notes/3",
+							"protocol": "https",
+							"host": [
+								"guarded-earth-72305",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"notes",
+								"3"
+							]
+						},
+						"description": "DELETE request\nit should delete the record abount 'php'"
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "UPDATE",
+			"item": [
+				{
+					"name": "PATCH",
+					"item": [
+						{
+							"name": "api/notes/:id",
+							"request": {
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\"name\": \"TypeScript\"}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "https://guarded-earth-72305.herokuapp.com/notes/2",
+									"protocol": "https",
+									"host": [
+										"guarded-earth-72305",
+										"herokuapp",
+										"com"
+									],
+									"path": [
+										"notes",
+										"2"
+									]
+								},
+								"description": "PATCH request\nit should change 'JavaScript' to 'TypeScript'"
+							},
+							"response": []
+						}
+					],
+					"protocolProfileBehavior": {},
+					"_postman_isSubFolder": true
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
